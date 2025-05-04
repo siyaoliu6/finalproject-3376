@@ -1,0 +1,35 @@
+Dataset,Variable,Class,Description
+characters,character_id,double,Unique identifier for each character record.
+characters,character_name,character,Full name associated with the character record.
+characters,character_normalized_name,character,Lowercase version of the character name.
+characters,gender,character,Gender associated with the character record.
+episodes,episode_id,double,Unique identifier for each episode record.
+episodes,image_url,character,URL linking to the image associated with the episode record.
+episodes,imdb_rating,double,IMDb rating for the episode.
+episodes,imdb_votes,double,Number of votes received on IMDb for the episode.
+episodes,number_in_season,double,Episode number within the season.
+episodes,number_in_series,double,Episode number within the series.
+episodes,original_air_date,date,Date the episode originally aired.
+episodes,original_air_year,double,Year the episode originally aired.
+episodes,production_code,character,Code used in production to identify the episode.
+episodes,season,double,Season number of the episode.
+episodes,title,character,Title of the episode.
+episodes,us_viewers_in_millions,double,Number of viewers in the U.S. in millions.
+episodes,video_url,character,URL linking to the video associated with the record.
+episodes,views,double,Total number of views recorded for the episode video URL.
+locations,location_id,double,Unique identifier for each location.
+locations,location_name,character,Name of the location.
+locations,location_normalized_name,character,Lowercase version of the location name.
+script_lines,script_line_id,double,Unique identifier for each script line.
+script_lines,episode_id,double,Identifier for the episode in which the line appears.
+script_lines,number,double,Sequential number of the line within the episode.
+script_lines,raw_text,character,The original text of the script line.
+script_lines,timestamp_in_ms,double,Timestamp of the line in milliseconds.
+script_lines,speaking_line,logical,Indicates whether the line is spoken by a character.
+script_lines,character_id,double,Identifier for the character speaking the line.
+script_lines,location_id,double,Identifier for the location where the line is spoken.
+script_lines,raw_character_text,character,Original text of the character's name.
+script_lines,raw_location_text,character,Original text of the location name.
+script_lines,spoken_words,character,Words spoken by the character in the line.
+script_lines,normalized_text,character,Lowercase version of the script line.
+script_lines,word_count,double,Number of words in the line.

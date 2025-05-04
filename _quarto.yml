@@ -8,8 +8,14 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - about.qmd
-
+      - href: Packages Required.qmd
+        text: Packages Required
+      - href: Simpsons Data.qmd
+        text: Data Preparation
+      - href: Exploratory Data.qmd
+        text: Exploratory Data Analysis
+      - href: Summary.qmd
+        text: Summary
 format:
   html:
     theme: cosmo

@@ -1,0 +1,118 @@
+---
+title: "Import Data"
+---
+
+## Data Preparation
+
+::: panel-tabset
+In the process of preparing the Simpsons dataset for analysis, I examined each table for missing values across columns. The summary of missing values revealed that certain variables—such as `gender` in the `characters` dataset, `character_id` and `spoken_words` in the `script_lines` dataset, and several metadata fields in the `episodes` dataset—contained a notable amount of missing values.
+
+Given the focus of this project on exploratory analysis of Simpsons episodes and script lines from 2010 to 2016, I assessed whether these missing values would impact the research questions and analyses we intend to conduct. Since variables like `gender`, `character_id`, `spoken_words`, `image_url`, and `video_url` are not directly required for our current scope of analysis, I will retain the missing values as is. These variables were excluded from downstream analysis to avoid introducing unnecessary complexity or bias.
+
+This decision was made intentionally to preserve the integrity of the original dataset and to avoid discarding potentially useful rows simply due to missing values in unused columns. If future analyses were to require variables with substantial missingness, additional steps such as imputation or targeted filtering would be considered at that time.
+
+### Data Import
+
+```{r}
+library(readr) # for reading CSV files
+library(DT)
+library(httr)
+library(tidyverse)
+library(jsonlite)
+library(withr)
+library(stringr)  # for string cleaning
+```
+
+```{r}
+# Import datasets directly from GitHub
+characters_url <- 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-02-04/simpsons_characters.csv'
+episodes_url <- 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-02-04/simpsons_episodes.csv'
+locations_url <- 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-02-04/simpsons_locations.csv'
+scripts_url <- 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-02-04/simpsons_script_lines.csv'
+
+simpsons_characters <- readr::read_csv(characters_url, show_col_types = FALSE)
+simpsons_episodes <- readr::read_csv(episodes_url, show_col_types = FALSE)
+simpsons_locations <- readr::read_csv(locations_url, show_col_types = FALSE)
+simpsons_script_lines <- readr::read_csv(scripts_url, show_col_types = FALSE)
+```
+
+### Data Cleaning
+
+```{r}
+# Filter episodes to 2010–2016
+simpsons_episodes_filtered <- simpsons_episodes |>
+  dplyr::filter(original_air_year >= 2010, original_air_year <= 2016)
+
+# Filter script lines to match those episodes
+simpsons_script_lines_filtered <- simpsons_script_lines |>
+  dplyr::semi_join(simpsons_episodes_filtered, by = c("episode_id" = "id"))
+
+# Preview cleaned data
+cat("\n--- Filtered data dimensions ---\n")
+cat("Episodes 2010-2016:", dim(simpsons_episodes_filtered), "\n")
+cat("Filtered script lines:", dim(simpsons_script_lines_filtered), "\n")
+```
+
+```{r}
+simpsons_characters <- simpsons_characters |> rename(character_id = id)
+simpsons_characters <- simpsons_characters |> rename(character_name = name)
+simpsons_characters <- simpsons_characters |> rename(character_normalized_name = normalized_name)
+simpsons_episodes <- simpsons_episodes |> rename(episode_id = id)
+simpsons_locations <- simpsons_locations |> rename(location_id = id)
+simpsons_locations <- simpsons_locations |> rename(location_name = name)
+simpsons_locations <- simpsons_locations |> rename(location_normalized_name = normalized_name)
+simpsons_script_lines <- simpsons_script_lines |> rename(script_line_id = id)
+
+```
+
+```{r}
+# Check for missing values
+cat("\n--- Missing values per column (characters) ---\n")
+print(sapply(simpsons_characters, function(x) sum(is.na(x))))
+
+
+cat("\n--- Missing values per column (episodes) ---\n")
+print(sapply(simpsons_episodes_filtered, function(x) sum(is.na(x))))
+
+cat("\n--- Missing values per column (locations) ---\n")
+print(sapply(simpsons_locations, function(x) sum(is.na(x))))
+
+cat("\n--- Missing values per column (script lines) ---\n")
+print(sapply(simpsons_script_lines_filtered, function(x) sum(is.na(x))))
+```
+
+```{r}
+simpsons_characters_clean <- simpsons_characters |>
+  mutate(
+    name = str_trim(character_name),
+    normalized_name = str_trim(character_normalized_name),
+    gender = str_trim(gender))
+
+simpsons_script_lines_clean <- simpsons_script_lines_filtered |>
+  mutate(
+    raw_character_text = str_trim(raw_character_text),
+    spoken_words = str_trim(spoken_words),
+    normalized_text = str_trim(normalized_text))
+
+simpsons_characters <- simpsons_characters_clean
+simpsons_script_lines <- simpsons_script_lines_clean
+```
+
+### Data Preview
+
+```{r}
+# Glimpse the datasets
+dplyr::glimpse(simpsons_characters)
+dplyr::glimpse(simpsons_episodes_filtered)
+dplyr::glimpse(simpsons_locations)
+dplyr::glimpse(simpsons_script_lines_filtered)
+```
+
+### Data Description
+:::
+
+```{r}
+characters_info <- read_csv("Variables Info.csv", show_col_types = FALSE)
+
+DT::datatable(characters_info)
+```

@@ -1,0 +1,13 @@
+---
+title: "Packages Required"
+---
+
+```{r}
+library(readr) # for reading CSV files
+library(DT)
+library(httr)
+library(tidyverse)
+library(jsonlite)
+library(withr)
+library(stringr)  # for string cleaning
+```
