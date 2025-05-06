@@ -13,14 +13,14 @@ This decision was made intentionally to preserve the integrity of the original d
 
 ### Data Import
 
-```{r}
-library(readr) # for reading CSV files
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+library(readr)
 library(DT)
 library(httr)
 library(tidyverse)
 library(jsonlite)
 library(withr)
-library(stringr)  # for string cleaning
+library(stringr)
 ```
 
 ```{r}
@@ -70,7 +70,6 @@ simpsons_script_lines <- simpsons_script_lines |> rename(script_line_id = id)
 cat("\n--- Missing values per column (characters) ---\n")
 print(sapply(simpsons_characters, function(x) sum(is.na(x))))
 
-
 cat("\n--- Missing values per column (episodes) ---\n")
 print(sapply(simpsons_episodes_filtered, function(x) sum(is.na(x))))
 
@@ -109,10 +108,10 @@ dplyr::glimpse(simpsons_script_lines_filtered)
 ```
 
 ### Data Description
-:::
 
-```{r}
+```{r, echo=FALSE}
 characters_info <- read_csv("Variables Info.csv", show_col_types = FALSE)
 
 DT::datatable(characters_info)
 ```
+:::
