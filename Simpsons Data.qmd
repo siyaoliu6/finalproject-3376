@@ -99,6 +99,21 @@ simpsons_characters <- simpsons_characters_clean
 simpsons_script_lines <- simpsons_script_lines_clean
 ```
 
+```{r}
+episode_summary <- simpsons_episodes_filtered |>
+  group_by(season) |>
+  mutate(
+    is_premiere = number_in_season == 1,
+    is_finale = number_in_season == max(number_in_season))
+
+premieres <- episode_summary |> filter(is_premiere) # Get only premieres
+finales <- episode_summary |> filter(is_finale) # Get only finales
+
+premieres <- premieres |> mutate(type = "Premiere")
+finales <- finales |> mutate(type = "Finale")
+premieres_finales <- bind_rows(premieres, finales)
+```
+
 ### Data Preview
 
 ```{r}
@@ -113,7 +128,6 @@ dplyr::glimpse(simpsons_script_lines_filtered)
 
 ```{r, echo=FALSE}
 characters_info <- read_csv("Variables Info.csv", show_col_types = FALSE)
-
 DT::datatable(characters_info)
 ```
 :::
