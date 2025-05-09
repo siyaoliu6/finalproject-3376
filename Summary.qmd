@@ -2,4 +2,10 @@
 title: "Summary"
 ---
 
-Hello!
+### Summary and Recommendations
+
+Through this analysis, we identify several drivers of episode success. While higher IMDb ratings show some positive relationship with U.S. viewership, the connection between fan votes and mass appeal is less straightforward, suggesting that niche fan-favorite episodes may not always reach the largest audiences. Additionally, premieres and finales may show elevated performance, indicating key opportunities for promotional pushes or special content.
+
+**Limitations:** Our analysis is limited to 2010–2016 seasons and does not account for earlier historical trends, international viewership, or streaming-only performance. Future work could integrate more recent or detailed viewer data, or compare success drivers across the show’s long history.
+
+**Recommendation:** Producers and broadcasters can use these insights to better understand what factors contribute to both critical success and audience reach, guiding future episode planning, marketing, or release strategies.

@@ -2,4 +2,194 @@
 title: "Exploratory Data Analysis"
 ---
 
-Hello!
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+library(plotly)
+library(readr) # for reading CSV files
+library(DT)
+library(httr)
+library(tidyverse) # For data wrangling
+library(jsonlite)
+library(withr)
+library(ggplot2) # For plotting
+library(stringr)  # for string cleaning
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+# Import datasets directly from GitHub
+characters_url <- 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-02-04/simpsons_characters.csv'
+episodes_url <- 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-02-04/simpsons_episodes.csv'
+locations_url <- 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-02-04/simpsons_locations.csv'
+scripts_url <- 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-02-04/simpsons_script_lines.csv'
+
+simpsons_characters <- readr::read_csv(characters_url, show_col_types = FALSE)
+simpsons_episodes <- readr::read_csv(episodes_url, show_col_types = FALSE)
+simpsons_locations <- readr::read_csv(locations_url, show_col_types = FALSE)
+simpsons_script_lines <- readr::read_csv(scripts_url, show_col_types = FALSE)
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+# Filter episodes to 2010–2016
+simpsons_episodes_filtered <- simpsons_episodes |>
+  dplyr::filter(original_air_year >= 2010, original_air_year <= 2016)
+
+# Filter script lines to match those episodes
+simpsons_script_lines_filtered <- simpsons_script_lines |>
+  dplyr::semi_join(simpsons_episodes_filtered, by = c("episode_id" = "id"))
+
+# Preview cleaned data
+cat("\n--- Filtered data dimensions ---\n")
+cat("Episodes 2010-2016:", dim(simpsons_episodes_filtered), "\n")
+cat("Filtered script lines:", dim(simpsons_script_lines_filtered), "\n")
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+simpsons_characters <- simpsons_characters |> rename(character_id = id)
+simpsons_characters <- simpsons_characters |> rename(character_name = name)
+simpsons_characters <- simpsons_characters |> rename(character_normalized_name = normalized_name)
+simpsons_episodes <- simpsons_episodes |> rename(episode_id = id)
+simpsons_locations <- simpsons_locations |> rename(location_id = id)
+simpsons_locations <- simpsons_locations |> rename(location_name = name)
+simpsons_locations <- simpsons_locations |> rename(location_normalized_name = normalized_name)
+simpsons_script_lines <- simpsons_script_lines |> rename(script_line_id = id)
+
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+simpsons_characters_clean <- simpsons_characters |>
+  mutate(
+    name = str_trim(character_name),
+    normalized_name = str_trim(character_normalized_name),
+    gender = str_trim(gender))
+
+simpsons_script_lines_clean <- simpsons_script_lines_filtered |>
+  mutate(
+    raw_character_text = str_trim(raw_character_text),
+    spoken_words = str_trim(spoken_words),
+    normalized_text = str_trim(normalized_text))
+
+simpsons_characters <- simpsons_characters_clean
+simpsons_script_lines <- simpsons_script_lines_clean
+```
+
+### Introduction
+
+In this analysis, I explore **what makes a Simpsons episode successful** during the 2010–2016 seasons. I define success in three ways: critical reception (IMDb ratings), fan engagement (IMDb votes), and audience reach (viewership numbers). By combining these perspectives, I aim to understand how episode quality, popularity, and visibility align — or diverge — and uncover meaningful insights that could inform content producers, broadcasters, or fans.
+
+### Data Preparation
+
+We use the cleaned `simpsons_episodes_filtered` dataset, which includes episodes from 2010 to 2016 with non-missing IMDb ratings and vote counts. We focus on the following variables: - `imdb_rating`: IMDb rating (critical reception) - `imdb_votes`: Number of IMDb votes (fan engagement) - `us_viewers_in_millions`: U.S. viewership numbers (audience reach) - `views`: Total view counts - `number_in_season`: Episode position in the season (to identify premieres and finales)
+
+We use the **tidyverse** package for data wrangling and **ggplot2** for plotting.
+
+### Exploratory Data Analysis
+
+::: panel-tabset
+
+#### Do Higher-Rated Episodes Attract More Viewers?
+
+```{r, warning=FALSE, message=FALSE}
+p1 <- ggplot(simpsons_episodes_filtered, aes(x = imdb_rating, y = us_viewers_in_millions)) +
+  geom_point(aes(text = paste("Title:", title,
+                              "<br>Season:", season,
+                              "<br>IMDb Votes:", imdb_votes)),
+             alpha = 0.6, color = "darkorange") +
+  geom_smooth(method = "lm", se = FALSE, color = "navy") +
+  labs(
+    title = "Do Higher-Rated Episodes Attract More U.S. Viewers?",
+    x = "IMDb Rating",
+    y = "U.S. Viewers (millions)") +
+  theme_minimal(base_size = 14)
+
+ggplotly(p1, tooltip = "text")
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+p2 <- simpsons_episodes_filtered |>
+  mutate(rating_bin = cut(imdb_rating, breaks = seq(4, 9, by = 0.5))) %>%
+  ggplot(aes(x = rating_bin, y = us_viewers_in_millions, text = paste0(
+    "Title: ", title,
+    "<br>Season: ", season,
+    "<br>IMDb Rating: ", imdb_rating,
+    "<br>Viewers: ", us_viewers_in_millions, "M"
+  ))) +
+  geom_boxplot(fill = "lightblue") +
+  labs(
+    title = "Distribution of U.S. Viewers by IMDb Rating Bins",
+    x = "IMDb Rating (binned)",
+    y = "U.S. Viewers (millions)"
+  ) +
+  theme_minimal(base_size = 14)
+ggplotly(p2, tooltip = "text")
+```
+
+**Insight:** We examine whether critical acclaim translates into broader audience reach. The trendline will reveal whether better-rated episodes generally attract more viewers.
+
+------------------------------------------------------------------------
+
+#### Do Episodes with More IMDb Votes Get More Views?
+
+```{r, warning=FALSE, message=FALSE}
+p3 <- ggplot(simpsons_episodes_filtered, aes(x = imdb_votes, y = views)) +
+  geom_point(aes(text = paste0(
+    "Title: ", title,
+    "<br>Season: ", season,
+    "<br>IMDb Rating: ", imdb_rating,
+    "<br>Total Views: ", views
+  )),
+  alpha = 0.6, color = "darkgreen") +
+  geom_smooth(method = "lm", se = FALSE, color = "limegreen") +
+  labs(
+    title = "Do Episodes with More IMDb Votes Get More Views?",
+    x = "IMDb Votes",
+    y = "Total Views"
+  ) +
+  theme_minimal(base_size = 14)
+
+ggplotly(p3, tooltip = "text")
+```
+
+**Insight:** We assess whether fan engagement (as measured by votes) corresponds to wider online viewership. Outliers or weak correlations could indicate niche-fan favorites or mass-appeal episodes.
+
+------------------------------------------------------------------------
+
+#### Are Season Premieres and Finales Better Rated or More Watched?
+
+First, we flag premieres and finales:
+
+```{r, warning=FALSE, message=FALSE}
+episode_summary <- simpsons_episodes_filtered |>
+  group_by(season) |>
+  mutate(
+    is_premiere = number_in_season == 1,
+    is_finale = number_in_season == max(number_in_season))
+```
+
+**Boxplot: IMDb Ratings of Premieres vs. Other Episodes**
+
+```{r, warning=FALSE, message=FALSE}
+ggplot(episode_summary, aes(x = factor(is_premiere), y = imdb_rating)) +
+  geom_boxplot(fill = "orange") +
+  labs(
+    title = "Are Season Premieres Better Rated?",
+    x = "Is Premiere?",
+    y = "IMDb Rating"
+  ) +
+  theme_minimal()
+```
+
+**Boxplot: Viewership of Finales vs. Other Episodes**
+
+```{r, warning=FALSE, message=FALSE}
+ggplot(episode_summary, aes(x = factor(is_finale), y = us_viewers_in_millions)) +
+  geom_boxplot(fill = "purple") +
+  labs(
+    title = "Are Season Finales More Watched?",
+    x = "Is Finale?",
+    y = "U.S. Viewers (millions)") +
+  theme_minimal()
+```
+
+**Insight:** We explore whether special episodes — the first and last in a season — show consistent boosts in ratings or viewership, helping identify key event episodes.
+
+:::

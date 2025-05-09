@@ -4,11 +4,13 @@ title: "Packages Required"
 
 ```{r, echo=TRUE, message=FALSE, warning=FALSE, results='hide'}
 
+library(plotly)
 library(readr) # for reading CSV files
 library(DT)
 library(httr)
-library(tidyverse)
+library(tidyverse) # For data wrangling
 library(jsonlite)
 library(withr)
+library(ggplot2) # For plotting
 library(stringr)  # for string cleaning
 ```

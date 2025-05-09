@@ -14,13 +14,15 @@ This decision was made intentionally to preserve the integrity of the original d
 ### Data Import
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-library(readr)
+library(plotly)
+library(readr) # for reading CSV files
 library(DT)
 library(httr)
-library(tidyverse)
+library(tidyverse) # For data wrangling
 library(jsonlite)
 library(withr)
-library(stringr)
+library(ggplot2) # For plotting
+library(stringr)  # for string cleaning
 ```
 
 ```{r}
@@ -65,7 +67,7 @@ simpsons_script_lines <- simpsons_script_lines |> rename(script_line_id = id)
 
 ```
 
-```{r}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
 # Check for missing values
 cat("\n--- Missing values per column (characters) ---\n")
 print(sapply(simpsons_characters, function(x) sum(is.na(x))))
