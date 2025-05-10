@@ -4,13 +4,10 @@ title: "Packages Required"
 
 ```{r, echo=TRUE, message=FALSE, warning=FALSE, results='hide'}
 
-library(plotly)
-library(readr) # for reading CSV files
-library(DT)
-library(httr)
-library(tidyverse) # For data wrangling
-library(jsonlite)
-library(withr)
-library(ggplot2) # For plotting
-library(stringr)  # for string cleaning
+library(plotly) # Used to create interactive visualizations, making it easy to explore the data dynamically.
+library(readr) # Helps read in CSV files quickly and cleanly.
+library(DT) # Creates tables to sort and filter data in the HTML report.
+library(tidyverse) # Used for data wrangling, manipulation, and general workflow.
+library(ggplot2) # Used to create beautiful and customizable static plots.
+library(stringr)  # Simplifies string handling and cleaning tasks, like extracting or modifying episode names or labels.
 ```

@@ -1,5 +1,14 @@
 ---
-title: "3376project"
+title: "Math 3376 Simpsons Project"
+author: "Siyao Liu"
 ---
 
-Welcome to my final project of math 3376.
+## Introduction
+
+> The Simpsons has been on air for over 30 seasons and has become a cultural staple, with millions of viewers tuning in over the decades. With such a long run, it’s natural to wonder: how do the season premieres and finales compare when it comes to ratings and audience numbers? Are finales always more exciting, or do premieres bring in more hype? This project takes a closer look at these questions because they tap into something bigger: how audiences engage with a long-running show and what keeps people coming back season after season.
+
+> To explore this, I’m using a dataset that includes episode-level information from The Simpsons, specifically IMDb ratings and U.S. viewership numbers. The plan is to clean and prep the data, then break the exploratory analysis into three parts, each digging into a different angle: how ratings compare between premieres and finales, how viewership trends shift across seasons, and whether certain patterns or surprises show up when we slice the data in creative ways. R will be the main tool here, using familiar packages like `dplyr`, `ggplot2`, and `tidyverse` to get the job done.
+
+> The approach is pretty straightforward: I’ll run summary statistics to compare episode types, build a range of visualizations and tables, and create new variables that help pull out interesting insights. For example, grouping episodes as premieres or finales lets me directly compare their performance, while filtering across seasons gives a sense of how things have changed over time. By breaking this into three EDA sections, the goal is to stay focused and answer the main questions clearly without just throwing out random graphs.
+
+> In the end, this analysis should give a fresh look at how a legendary show like The Simpsons has held up (or shifted) in the eyes of its fans. Whether you’re a data nerd, a TV buff, or just someone curious about audience patterns, these findings can offer takeaways about what keeps people engaged, what episodes resonate most, and how shows evolve over time. It’s also a solid example of how applying data wrangling and visualization tools can pull meaningful insights out of entertainment data, beyond just fan speculation.

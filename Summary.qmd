@@ -2,10 +2,26 @@
 title: "Summary"
 ---
 
-### Summary and Recommendations
+------------------------------------------------------------------------
 
-Through this analysis, we identify several drivers of episode success. While higher IMDb ratings show some positive relationship with U.S. viewership, the connection between fan votes and mass appeal is less straightforward, suggesting that niche fan-favorite episodes may not always reach the largest audiences. Additionally, premieres and finales may show elevated performance, indicating key opportunities for promotional pushes or special content.
+**Problem Statement**\
 
-**Limitations:** Our analysis is limited to 2010–2016 seasons and does not account for earlier historical trends, international viewership, or streaming-only performance. Future work could integrate more recent or detailed viewer data, or compare success drivers across the show’s long history.
+> This project explored what makes a Simpsons episode “successful” during the 2010–2016 seasons by examining three main factors: critical reception (IMDb ratings), fan engagement (IMDb votes), and audience reach (U.S. viewership numbers). I focused especially on comparing season premieres and finales to uncover how episode placement within a season affects these success measures.
 
-**Recommendation:** Producers and broadcasters can use these insights to better understand what factors contribute to both critical success and audience reach, guiding future episode planning, marketing, or release strategies.
+**Approach and Methodology**\
+
+> I addressed this problem by using the cleaned `simpsons_episodes_filtered` dataset, which includes episode-level details like ratings, votes, and viewers. I also applied data wrangling techniques in R to group, filter, and summarize the data, then created visualizations and summary tables to explore relationships across variables. The methodology included scatter plots, density plots, boxplots to compare averages and distributions across premieres, finales, and the full set of episodes.
+
+**Key Insights**\
+
+> The analysis revealed several interesting insights: higher-rated episodes often—but not always—attract more viewers, and episodes with more IMDb votes show only a moderate connection to live viewership numbers. Finales tend to pull in more viewers, likely due to their climactic nature, but premieres often receive slightly higher ratings, reflecting the excitement of a new season. Additionally, I observed a general decline in live viewership across seasons, even for highly rated episodes, likely reflecting broader shifts in TV consumption habits.
+
+**Implications**\
+
+> These findings are valuable for content producers, broadcasters, and media analysts seeking to understand audience behavior. They highlight that while quality and fan engagement matter, other factors (like cultural shifts or platform changes) significantly influence viewership. For fans, this analysis offers a data-driven look at how their favorite episodes perform and how community opinions align (or don’t) with mass audience trends.
+
+**Limitations and Future Work**\
+
+> This analysis is limited to available data from 2010–2016 and does not include streaming or international viewership, which could paint a fuller picture. Additionally, the analysis assumes that IMDb votes represent fan engagement, but it does not account for biases (e.g., who chooses to vote). Future work could include sentiment analysis of episode reviews, examining social media engagement, or extending the dataset to cover newer seasons or global audiences for a more comprehensive understanding.
+
+------------------------------------------------------------------------

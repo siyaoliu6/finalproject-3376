@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Summary – 3376project</title>
+<title>Summary – Math 3376 Simpsons Project</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -79,7 +79,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">3376project</span>
+    <span class="navbar-title">Math 3376 Simpsons Project</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -119,14 +119,8 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#summary-and-recommendations" id="toc-summary-and-recommendations" class="nav-link active" data-scroll-target="#summary-and-recommendations">Summary and Recommendations</a></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -150,14 +144,35 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="summary-and-recommendations" class="level3">
-<h3 class="anchored" data-anchor-id="summary-and-recommendations">Summary and Recommendations</h3>
-<p>Through this analysis, we identify several drivers of episode success. While higher IMDb ratings show some positive relationship with U.S. viewership, the connection between fan votes and mass appeal is less straightforward, suggesting that niche fan-favorite episodes may not always reach the largest audiences. Additionally, premieres and finales may show elevated performance, indicating key opportunities for promotional pushes or special content.</p>
-<p><strong>Limitations:</strong> Our analysis is limited to 2010–2016 seasons and does not account for earlier historical trends, international viewership, or streaming-only performance. Future work could integrate more recent or detailed viewer data, or compare success drivers across the show’s long history.</p>
-<p><strong>Recommendation:</strong> Producers and broadcasters can use these insights to better understand what factors contribute to both critical success and audience reach, guiding future episode planning, marketing, or release strategies.</p>
+<hr>
+<p><strong>Problem Statement</strong><br>
+</p>
+<blockquote class="blockquote">
+<p>This project explored what makes a Simpsons episode “successful” during the 2010–2016 seasons by examining three main factors: critical reception (IMDb ratings), fan engagement (IMDb votes), and audience reach (U.S. viewership numbers). I focused especially on comparing season premieres and finales to uncover how episode placement within a season affects these success measures.</p>
+</blockquote>
+<p><strong>Approach and Methodology</strong><br>
+</p>
+<blockquote class="blockquote">
+<p>I addressed this problem by using the cleaned <code>simpsons_episodes_filtered</code> dataset, which includes episode-level details like ratings, votes, and viewers. I also applied data wrangling techniques in R to group, filter, and summarize the data, then created visualizations and summary tables to explore relationships across variables. The methodology included scatter plots, density plots, boxplots to compare averages and distributions across premieres, finales, and the full set of episodes.</p>
+</blockquote>
+<p><strong>Key Insights</strong><br>
+</p>
+<blockquote class="blockquote">
+<p>The analysis revealed several interesting insights: higher-rated episodes often—but not always—attract more viewers, and episodes with more IMDb votes show only a moderate connection to live viewership numbers. Finales tend to pull in more viewers, likely due to their climactic nature, but premieres often receive slightly higher ratings, reflecting the excitement of a new season. Additionally, I observed a general decline in live viewership across seasons, even for highly rated episodes, likely reflecting broader shifts in TV consumption habits.</p>
+</blockquote>
+<p><strong>Implications</strong><br>
+</p>
+<blockquote class="blockquote">
+<p>These findings are valuable for content producers, broadcasters, and media analysts seeking to understand audience behavior. They highlight that while quality and fan engagement matter, other factors (like cultural shifts or platform changes) significantly influence viewership. For fans, this analysis offers a data-driven look at how their favorite episodes perform and how community opinions align (or don’t) with mass audience trends.</p>
+</blockquote>
+<p><strong>Limitations and Future Work</strong><br>
+</p>
+<blockquote class="blockquote">
+<p>This analysis is limited to available data from 2010–2016 and does not include streaming or international viewership, which could paint a fuller picture. Additionally, the analysis assumes that IMDb votes represent fan engagement, but it does not account for biases (e.g., who chooses to vote). Future work could include sentiment analysis of episode reviews, examining social media engagement, or extending the dataset to cover newer seasons or global audiences for a more comprehensive understanding.</p>
+</blockquote>
+<hr>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

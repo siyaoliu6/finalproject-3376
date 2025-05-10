@@ -4,14 +4,11 @@ title: "Exploratory Data Analysis"
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 library(plotly)
-library(readr) # for reading CSV files
+library(readr)
 library(DT)
-library(httr)
-library(tidyverse) # For data wrangling
-library(jsonlite)
-library(withr)
-library(ggplot2) # For plotting
-library(stringr)  # for string cleaning
+library(tidyverse)
+library(ggplot2)
+library(stringr)
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
@@ -70,19 +67,22 @@ simpsons_characters <- simpsons_characters_clean
 simpsons_script_lines <- simpsons_script_lines_clean
 ```
 
-### Introduction
+In this analysis, I explore **what makes a Simpsons episode successful** during the 2010–2016 seasons. I define success through three lenses: critical reception (IMDb ratings), fan engagement (IMDb votes), and audience reach (U.S. viewership numbers). I used the cleaned `simpsons_episodes_filtered` dataset, and focused on the following variables: In this analysis, I explore **what makes a Simpsons episode successful** during the 2010–2016 seasons. I define success through three lenses: critical reception (IMDb ratings), fan engagement (IMDb votes), and audience reach (U.S. viewership numbers). I used the cleaned `simpsons_episodes_filtered` dataset and focused on the following variables:
 
-In this analysis, I explore **what makes a Simpsons episode successful** during the 2010–2016 seasons. I define success in three ways: critical reception (IMDb ratings), fan engagement (IMDb votes), and audience reach (viewership numbers). By combining these perspectives, I aim to understand how episode quality, popularity, and visibility align — or diverge — and uncover meaningful insights that could inform content producers, broadcasters, or fans.
+-   `imdb_rating`: IMDb rating (critical reception)
+-   `imdb_votes`: Number of IMDb votes (fan engagement)
+-   `us_viewers_in_millions`: U.S. viewership numbers (audience reach)
+-   `views`: Total view counts
+-   `number_in_season`: Episode position in the season (to identify premieres and finales)
 
-### Data Preparation
-
-I used the cleaned `simpsons_episodes_filtered` dataset, which includes episodes from 2010 to 2016 with non-missing IMDb ratings and vote counts. I focus on the following variables: - `imdb_rating`: IMDb rating (critical reception) - `imdb_votes`: Number of IMDb votes (fan engagement) - `us_viewers_in_millions`: U.S. viewership numbers (audience reach) - `views`: Total view counts - `number_in_season`: Episode position in the season (to identify premieres and finales). I also create a new dataset called `episode_summary` based on the `simpsons_Episodes_filtered` dataset.
-
-### Exploratory Data Analysis
+I also create a new dataset called `episode_summary` based on the `simpsons_episodes_filtered` dataset.
 
 ::: panel-tabset
+#### Ratings vs. Viewers
 
-#### Do Higher-Rated Episodes Attract More Viewers?
+### Do Higher-Rated Episodes Attract More Viewers?
+
+> I explored whether higher-rated episodes attract more viewers by creating a scatter plot and box plot comparing IMDb ratings (`imdb_rating`) against U.S. viewers (`us_viewers_in_millions`). To uncover non-obvious insights, I sliced the data by season and highlighted outliers where episodes received high ratings but had low viewership, or vice versa. One key insight is that while there’s a general trend where higher ratings loosely align with more viewers, there are several exceptions especially in later seasons, where strong ratings don’t always translate into high audience numbers, possibly reflecting the shift to online streaming.
 
 ```{r, warning=FALSE, message=FALSE}
 p1 <- ggplot(simpsons_episodes_filtered, aes(x = imdb_rating, y = us_viewers_in_millions)) +
@@ -92,39 +92,41 @@ p1 <- ggplot(simpsons_episodes_filtered, aes(x = imdb_rating, y = us_viewers_in_
              alpha = 0.6, color = "darkorange") +
   geom_smooth(method = "lm", se = FALSE, color = "navy") +
   labs(
-    title = "Do Higher-Rated Episodes Attract More U.S. Viewers?",
-    x = "IMDb Rating",
+    title = "Relationship Between IMDb Ratings and U.S. Viewership",
+    x = "IMDb Rating (1–10 scale)",
     y = "U.S. Viewers (millions)") +
   theme_minimal(base_size = 14)
 
 ggplotly(p1, tooltip = "text")
 ```
 
-
 ```{r, warning=FALSE, message=FALSE}
 p2 <- simpsons_episodes_filtered |>
-  mutate(rating_bin = cut(imdb_rating, breaks = seq(4, 9, by = 0.5))) %>%
+  mutate(rating_bin = cut(imdb_rating, breaks = seq(4, 9, by = 0.5))) |>
   ggplot(aes(x = rating_bin, y = us_viewers_in_millions, text = paste0(
     "Title: ", title,
     "<br>Season: ", season,
     "<br>IMDb Rating: ", imdb_rating,
     "<br>Viewers: ", us_viewers_in_millions, "M"
   ))) +
-  geom_boxplot(fill = "yellow") +
+  geom_boxplot(fill = "gold") +
   labs(
-    title = "Distribution of U.S. Viewers by IMDb Rating Bins",
-    x = "IMDb Rating (binned)",
-    y = "U.S. Viewers (millions)"
-  ) +
+    title = "Distribution of U.S. Viewership Across IMDb Rating Bins",
+    x = "IMDb Rating (Binned)",
+    y = "U.S. Viewers (millions)") +
   theme_minimal(base_size = 14)
+
 ggplotly(p2, tooltip = "text")
 ```
 
-**Insight:** We examine whether critical acclaim translates into broader audience reach. The trendline will reveal whether better-rated episodes generally attract more viewers.
 
 ------------------------------------------------------------------------
 
-#### Do Episodes with More IMDb Votes Get More Views?
+#### Votes vs. Viewers
+
+### Do Episodes with More IMDb Votes Get More Views?
+
+> I examined whether episodes with more IMDb votes get more views. Here, I created a scatter plot below that shows the relationship between the number of IMDb votes an episode has received and its total U.S. viewership. There’s a visible positive trend: episodes with more IMDb votes generally have more total views, as shown by the upward-sloping line.
 
 ```{r, warning=FALSE, message=FALSE}
 p3 <- ggplot(simpsons_episodes_filtered, aes(x = imdb_votes, y = views)) +
@@ -137,20 +139,20 @@ p3 <- ggplot(simpsons_episodes_filtered, aes(x = imdb_votes, y = views)) +
   alpha = 0.6, color = "darkgreen") +
   geom_smooth(method = "lm", se = FALSE, color = "limegreen") +
   labs(
-    title = "Do Episodes with More IMDb Votes Get More Views?",
-    x = "IMDb Votes",
-    y = "Total Views"
-  ) +
+    title = "Relationship Between IMDb Votes and Total Viewership",
+    x = "IMDb Votes (Fan Engagement)",
+    y = "Total Views (Audience Reach)") +
   theme_minimal(base_size = 14)
 
 ggplotly(p3, tooltip = "text")
 ```
 
-**Insight:** We assess whether fan engagement (as measured by votes) corresponds to wider online viewership. Outliers or weak correlations could indicate niche-fan favorites or mass-appeal episodes.
-
 ------------------------------------------------------------------------
 
-#### Are Season Premieres and Finales Better Rated or More Watched?
+#### Premieres vs. Finales
+
+### Are Season Premieres and Finales Better Rated or More Watched?
+>I compare season premieres and finales to see which tend to perform better in terms of IMDb ratings and U.S. viewership.
 
 ```{r, warning=FALSE, message=FALSE}
 episode_summary <- simpsons_episodes_filtered |>
@@ -168,35 +170,60 @@ premieres_finales <- bind_rows(premieres, finales)
 ```
 
 ```{r, warning=FALSE, message=FALSE}
-# IMDb ratings
+# IMDb ratings density
 ggplot(premieres_finales, aes(x = imdb_rating, fill = type)) +
-    geom_density(alpha = 0.5) +
-    labs(title = "Density Plot of IMDb Ratings: Premieres vs. Finales")
-
-# US viewers
-ggplot(premieres_finales, aes(x = us_viewers_in_millions, fill = type)) +
-    geom_density(alpha = 0.5) +
-    labs(title = "Density Plot of US Viewership: Premieres vs. Finales")
+  geom_density(alpha = 0.5) +
+  labs(
+    title = "Density Plot of IMDb Ratings for Premieres vs. Finales",
+    x = "IMDb Rating (1–10 scale)",
+    y = "Density") +
+  theme_minimal(base_size = 14)
 ```
 
 ```{r, warning=FALSE, message=FALSE}
-season_summary <- premieres_finales |> 
-    group_by(season, type) |> 
-    summarise(
-        avg_rating = mean(imdb_rating, na.rm = TRUE),
-        avg_views = mean(us_viewers_in_millions, na.rm = TRUE))
-
-# Ratings over seasons
-ggplot(season_summary, aes(x = season, y = avg_rating, color = type)) +
-    geom_line() + geom_point() +
-    labs(title = "Average IMDb Ratings by Season")
-
-# Views over seasons
-ggplot(season_summary, aes(x = season, y = avg_views, color = type)) +
-    geom_line() + geom_point() +
-    labs(title = "Average US Viewership by Season")
+# US viewers density
+ggplot(premieres_finales, aes(x = us_viewers_in_millions, fill = type)) +
+  geom_density(alpha = 0.5) +
+  labs(
+    title = "Density Plot of U.S. Viewership for Premieres vs. Finales",
+    x = "U.S. Viewers (millions)",
+    y = "Density") +
+  theme_minimal(base_size = 14)
+```
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+season_summary <- premieres_finales |>
+  group_by(season, type) |>
+  summarise(
+    avg_rating = mean(imdb_rating, na.rm = TRUE),
+    avg_views = mean(us_viewers_in_millions, na.rm = TRUE))
 ```
 
+```{r, warning=FALSE, message=FALSE}
+# Ratings over seasons
+ggplot(season_summary, aes(x = season, y = avg_rating, color = type)) +
+  geom_line() + 
+  geom_point() +
+  labs(
+    title = "Average IMDb Ratings of Premieres vs. Finales Across Seasons (2010–2016)",
+    x = "Season",
+    y = "Average IMDb Rating (1–10 scale)",
+    color = "Episode Type") +
+  theme_minimal(base_size = 14)
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+# Views over seasons
+ggplot(season_summary, aes(x = season, y = avg_views, color = type)) +
+  geom_line() + 
+  geom_point() +
+  labs(
+    title = "Average U.S. Viewership of Premieres vs. Finales Across Seasons (2010–2016)",
+    x = "Season",
+    y = "Average U.S. Viewers (millions)",
+    color = "Episode Type") +
+  theme_minimal(base_size = 14)
+```
 
 ```{r, warning=FALSE, message=FALSE}
 summary_table <- premieres_finales |> 
@@ -212,7 +239,6 @@ DT::datatable(summary_table,
               caption = "Summary Statistics for Premieres vs. Finales",
               options = list(pageLength = 5, scrollX = TRUE))
 ```
-
 
 ```{r, warning=FALSE, message=FALSE}
 top_premieres <- premieres |> 
@@ -233,7 +259,5 @@ DT::datatable(top_finales,
               caption = "Top 5 Finales by IMDb Rating",
               options = list(pageLength = 5, scrollX = TRUE))
 ```
-
-**Insight:** We explore whether special episodes — the first and last in a season — show consistent boosts in ratings or viewership, helping identify key event episodes.
 
 :::

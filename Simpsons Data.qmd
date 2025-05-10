@@ -1,28 +1,21 @@
 ---
-title: "Import Data"
+title: "Data Preparation"
 ---
 
-## Data Preparation
-
 ::: panel-tabset
-In the process of preparing the Simpsons dataset for analysis, I examined each table for missing values across columns. The summary of missing values revealed that certain variables—such as `gender` in the `characters` dataset, `character_id` and `spoken_words` in the `script_lines` dataset, and several metadata fields in the `episodes` dataset—contained a notable amount of missing values.
-
-Given the focus of this project on exploratory analysis of Simpsons episodes and script lines from 2010 to 2016, I assessed whether these missing values would impact the research questions and analyses we intend to conduct. Since variables like `gender`, `character_id`, `spoken_words`, `image_url`, and `video_url` are not directly required for our current scope of analysis, I will retain the missing values as is. These variables were excluded from downstream analysis to avoid introducing unnecessary complexity or bias.
-
-This decision was made intentionally to preserve the integrity of the original dataset and to avoid discarding potentially useful rows simply due to missing values in unused columns. If future analyses were to require variables with substantial missingness, additional steps such as imputation or targeted filtering would be considered at that time.
-
 ### Data Import
+
+The Simpsons episode data used in this project was sourced from the [TidyTuesday GitHub repository](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-02-04/readme.md), which regularly releases cleaned datasets for public data exploration. This dataset was originally compiled to capture key details about The Simpsons episodes, including season number, episode number, IMDb rating, U.S. viewers (in millions), episode title, and air date. The data provides a rich history spanning over 30 seasons, offering a solid foundation to investigate audience reception trends. Some missing values exist, particularly in older seasons where complete viewership records were harder to track, and these are typically marked as NA.
+
+After importing the data, I checked the structure and contents using functions like glimpse(). Cleaning steps included filtering out any special episodes (like holiday specials or behind-the-scenes features) that weren’t part of the regular season lineup, ensuring only season premieres and finales were kept for focused comparisons, and creating new indicator variables (like a premiere_or_finale flag) to easily group and analyze episodes.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 library(plotly)
-library(readr) # for reading CSV files
+library(readr)
 library(DT)
-library(httr)
-library(tidyverse) # For data wrangling
-library(jsonlite)
-library(withr)
-library(ggplot2) # For plotting
-library(stringr)  # for string cleaning
+library(tidyverse)
+library(ggplot2)
+library(stringr)
 ```
 
 ```{r}
@@ -40,6 +33,14 @@ simpsons_script_lines <- readr::read_csv(scripts_url, show_col_types = FALSE)
 
 ### Data Cleaning
 
+> While preparing the Simpsons dataset for analysis, I examined each table for missing values across columns. The summary of missing values revealed that certain variables—such as `gender` in the `characters` dataset, `character_id` and `spoken_words` in the `script_lines` dataset, and several metadata fields in the `episodes` dataset—contained a notable amount of missing values.
+>
+> Given the focus of this project on exploratory analysis of Simpsons episodes from 2010 to 2016, I assessed whether these missing values would impact the research questions and analyses we intend to conduct. Since variables like `gender`, `character_id`, `spoken_words`, `image_url`, and `video_url` are not directly required for my current scope of analysis, I will retain the missing values as is. These variables were excluded from downstream analysis to avoid introducing unnecessary complexity or bias.
+>
+> This decision was made intentionally to preserve the integrity of the original dataset and to avoid discarding potentially useful rows simply due to missing values in unused columns. If future analyses were to require variables with substantial missingness, additional steps such as imputation or targeted filtering would be considered at that time.
+
+> **To prepare the data, I filtered the dataset to include only episodes from 2010 to 2016. I then used semi_join() to match and keep only the script lines linked to those episodes. Finally, I printed the dimensions of both filtered datasets to check that the filtering worked correctly and that only the relevant data remained for analysis.**
+
 ```{r}
 # Filter episodes to 2010–2016
 simpsons_episodes_filtered <- simpsons_episodes |>
@@ -55,6 +56,8 @@ cat("Episodes 2010-2016:", dim(simpsons_episodes_filtered), "\n")
 cat("Filtered script lines:", dim(simpsons_script_lines_filtered), "\n")
 ```
 
+> **I renamed several columns across the datasets to use consistent and clearer names, like `character_id`, `episode_id`, and `location_name`. This step ensured that later joins and merges would be smoother and less error-prone by standardizing key variable names across all tables.**
+
 ```{r}
 simpsons_characters <- simpsons_characters |> rename(character_id = id)
 simpsons_characters <- simpsons_characters |> rename(character_name = name)
@@ -64,10 +67,9 @@ simpsons_locations <- simpsons_locations |> rename(location_id = id)
 simpsons_locations <- simpsons_locations |> rename(location_name = name)
 simpsons_locations <- simpsons_locations |> rename(location_normalized_name = normalized_name)
 simpsons_script_lines <- simpsons_script_lines |> rename(script_line_id = id)
-
 ```
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 # Check for missing values
 cat("\n--- Missing values per column (characters) ---\n")
 print(sapply(simpsons_characters, function(x) sum(is.na(x))))
@@ -81,6 +83,8 @@ print(sapply(simpsons_locations, function(x) sum(is.na(x))))
 cat("\n--- Missing values per column (script lines) ---\n")
 print(sapply(simpsons_script_lines_filtered, function(x) sum(is.na(x))))
 ```
+
+> **I cleaned the `simpsons_characters` and `simpsons_script_lines` datasets by using str_trim() to remove any extra spaces from key text fields, including character names, gender, spoken lines, and normalized text. This helped ensure consistent formatting across the datasets, reducing the risk of mismatches or errors during later merges or analysis.**
 
 ```{r}
 simpsons_characters_clean <- simpsons_characters |>
@@ -99,6 +103,8 @@ simpsons_characters <- simpsons_characters_clean
 simpsons_script_lines <- simpsons_script_lines_clean
 ```
 
+> **I grouped the filtered episodes by season and created two new flags: one to identify `premieres` (the first episode in the season) and another to identify `finales` (the last episode). After separating the premiere and finale rows, I labeled them with a new type variable and then combined the two groups into a single dataset. This final combined table lets me directly compare season premieres and finales in my analysis.**
+
 ```{r}
 episode_summary <- simpsons_episodes_filtered |>
   group_by(season) |>
@@ -116,6 +122,8 @@ premieres_finales <- bind_rows(premieres, finales)
 
 ### Data Preview
 
+> **I used `glimpse()` to take a quick look at the cleaned datasets, including characters, filtered episodes, locations, and script lines.**
+
 ```{r}
 # Glimpse the datasets
 dplyr::glimpse(simpsons_characters)
@@ -125,6 +133,8 @@ dplyr::glimpse(simpsons_script_lines_filtered)
 ```
 
 ### Data Description
+
+> **This a table that provides summary infomation for each variable.**
 
 ```{r, echo=FALSE}
 characters_info <- read_csv("Variables Info.csv", show_col_types = FALSE)
